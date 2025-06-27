@@ -1,0 +1,13 @@
+lib/
+├── models/
+│   └── todo.dart
+├── viewmodels/
+│   └── todo_viewmodel.dart
+├── views/
+│   ├── home_view.dart
+│   └── add_edit_view.dart
+├── services/
+│   └── firebase_service.dart
+├── providers/
+│   └── todo_provider.dart
+├── main.dart
