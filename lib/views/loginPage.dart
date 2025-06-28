@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:todo_app/views/signUpPage.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -74,7 +75,7 @@ class LoginPage extends StatelessWidget {
                             backgroundColor: Colors.orange
                           ),
                             onPressed: ()async{
-                            login(email.text,pass.text);
+                            login(email.text,pass.text,context);
                         }, child: Text(
                             "Login",
                           style: TextStyle(
@@ -139,8 +140,24 @@ class LoginPage extends StatelessWidget {
                               ),
                             ) )
                     ),
-
-
+                    Positioned(
+                      top: 470,
+                      left: 110,
+                      child: Row(
+                        children: [
+                          Text('create new account?'),
+                          GestureDetector(
+                              onTap: (){
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const signUp()),
+                                );
+                              },
+                              child: Text('signUp')
+                          )
+                        ],
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -151,13 +168,25 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  void login(String email, String pass)async{
+  void login(String email, String pass,context)async{
     try{
       final val = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: pass);
       print(val.credential);
     }on FirebaseException catch(e){
       print(e.message);
+      showDialog(context: context, builder: (context){
+        return AlertDialog(
+          backgroundColor: Colors.yellow,
+          actions: [
+            TextButton(onPressed: (){
+              Navigator.of(context).pop();
+            }, child: Text('ok'))
+          ],
+          title: Text('Error'),
+          content: Text(e.message.toString()),
+        );
+      });
     }
   }
 }

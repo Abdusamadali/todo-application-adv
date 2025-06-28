@@ -2,19 +2,24 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:todo_app/providers/provider.dart';
+
 
 
 
 //abdus05@gmail.com
 //123456789
-class signUp extends StatelessWidget {
+class signUp extends ConsumerWidget {
   const signUp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,WidgetRef ref) {
     final email_controller = TextEditingController();
     final pass_contorller = TextEditingController();
+    final pass2 = TextEditingController();
+    // final Registered=ref.watch(pageProvider.notifier).state;
 
     return Scaffold(
       backgroundColor: Colors.yellow[200],
@@ -73,6 +78,7 @@ class signUp extends StatelessWidget {
                         left: 50,
                         top: 150,
                         child: TextField(
+                          controller: pass2,
                           decoration: InputDecoration(
                             hintText: ' Re-enter Password',
                           ),
@@ -85,10 +91,44 @@ class signUp extends StatelessWidget {
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.orange),
                           onPressed: () async {
-                            createUser(email_controller.text.toString(),
-                                pass_contorller.text.toString());
-                            email_controller.clear();
-                            pass_contorller.clear();
+
+                            if(pass_contorller.text.trim()!=pass2.text.trim()) {
+                              showDialog(context: context, builder: (context){
+                                return AlertDialog(
+                                  backgroundColor: Colors.yellow,
+                                  actions: [
+                                    TextButton(onPressed: (){
+                                      Navigator.of(context).pop();
+                                    }, child: Text('ok'))
+                                  ],
+                                  title: Text('Error'),
+                                  content: Text('please enter same password'),
+                                );
+                              });
+                            }
+                              try{
+                                await createUser(email_controller.text.trim(),
+                                    pass_contorller.text.trim());
+                                // email_controller.clear();
+                                // pass_contorller.clear();
+                                // pass2.clear();
+                              }on FirebaseAuthException catch(e){
+                                showDialog(context: context, builder: (context){
+                                  return AlertDialog(
+                                    backgroundColor: Colors.yellow,
+                                    actions: [
+                                      TextButton(onPressed: (){
+                                        Navigator.of(context).pop();
+                                      }, child: Text('ok'))
+                                    ],
+                                    title: Text('Error'),
+                                    content: Text(e.message.toString()),
+                                  );
+                                });
+                              }
+
+
+
                           },
                           child: Text(
                             "SignUp",
@@ -139,7 +179,10 @@ class signUp extends StatelessWidget {
                             child: Text(
                               'Facebook',
                               style: TextStyle(color: Colors.yellow[200]),
-                            ))),
+                            )
+                        )
+                    ),
+
                   ],
                 ),
               ),
@@ -148,15 +191,15 @@ class signUp extends StatelessWidget {
         ),
       ),
     );
+
   }
 
   Future<void> createUser(email, pass) async {
-    try{
+    try {
       final user = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: pass);
-    }on FirebaseException catch(e){
-        print(e.message);
+    } on FirebaseException catch (e) {
+      print(e.message);
     }
-
   }
 }

@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todo_app/providers/provider.dart';
 
+
+
+
 class home extends ConsumerWidget {
 
   const home({super.key});
@@ -12,9 +15,11 @@ class home extends ConsumerWidget {
 
     // final provider = ref.watch(todoProvider);
     // final providerNoti = ref.watch(todoProvider.notifier);
+     final todos = ref.watch(todoProvider);
+     final todoNotifier = ref.read(todoProvider.notifier);
 
 
-    return Scaffold(
+     return Scaffold(
       backgroundColor: Colors.yellow[200],
       appBar: AppBar(
         actions: [
@@ -37,7 +42,8 @@ class home extends ConsumerWidget {
   }
 
   void submitTextField(val,ref,context){
-    ref.watch(todoProvider.notifier).addTask(val);
+    // ref.watch(todoProvider.notifier).addTask(val);
+    ref.read(todoProvider.notifier).addTask(val);
     // Navigator.of(context).pop();
   }
 
